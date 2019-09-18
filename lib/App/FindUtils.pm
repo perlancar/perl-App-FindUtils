@@ -21,10 +21,10 @@ $SPEC{find_duplicate_files} = {
             pos => 0,
             slurpy => 1,
         },
-        case_insensitive => {
-            schema => 'bool*',
-            cmdline_aliases=>{i=>{}},
-        },
+        #case_insensitive => {
+        #    schema => 'bool*',
+        #    cmdline_aliases=>{i=>{}},
+        #},
         detail => {
             summary => 'Instead of just listing duplicate names, return all the location of duplicates',
             schema => 'bool*',
@@ -38,14 +38,15 @@ sub find_duplicate_files {
 
     my %args = @_;
     $args{dirs} //= ["."];
+    #my $ci = $args{case_insensitive};
 
-    my %files; # filename => {dir_realpath1=>n, ...}. if hash has >1 keys than it's duplicate
+    my %files; # filename => {realpath1=>orig_filename, ...}. if hash has >1 keys than it's duplicate
     File::Find::find(
         sub {
             no warnings 'once'; # for $File::find::dir
             # XXX inefficient
-            my $realdir = Cwd::realpath($File::Find::dir);
-            $files{$_}{$realdir}++;
+            my $realpath = Cwd::realpath($_);
+            $files{$_}{$realpath}++;
         },
         @{ $args{dirs} }
     );
@@ -54,8 +55,8 @@ sub find_duplicate_files {
     for my $file (sort keys %files) {
         next unless keys(%{$files{$file}}) > 1;
         if ($args{detail}) {
-            for my $dir (sort keys %{$files{$file}}) {
-                push @res, {name=>$file, dir=>$dir};
+            for my $path (sort keys %{$files{$file}}) {
+                push @res, {name=>$file, path=>$path};
             }
         } else {
             push @res, $file;
