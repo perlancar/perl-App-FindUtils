@@ -9,7 +9,7 @@ use warnings;
 
 our %SPEC;
 
-$SPEC{find_duplicate_files} = {
+$SPEC{find_duplicate_filenames} = {
     v => 1.1,
     summary => 'Search directories recursively and find files/dirs with duplicate names',
     args => {
@@ -32,7 +32,7 @@ $SPEC{find_duplicate_files} = {
         },
     },
 };
-sub find_duplicate_files {
+sub find_duplicate_filenames {
     require Cwd;
     require File::Find;
 
