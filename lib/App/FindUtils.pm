@@ -77,4 +77,6 @@ This distributions provides the following command-line utilities:
 
 =head1 SEE ALSO
 
+L<uniq-files> from L<App::UniqFiles>
+
 =cut
