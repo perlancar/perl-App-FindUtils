@@ -1,11 +1,14 @@
 package App::FindUtils;
 
-# DATE
-# VERSION
-
 use 5.010001;
 use strict;
 use warnings;
+use Log::ger;
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 our %SPEC;
 
@@ -31,6 +34,15 @@ $SPEC{find_duplicate_filenames} = {
             cmdline_aliases => {l=>{}},
         },
     },
+    examples => [
+        {
+            summary => "Find duplicate filenames under the current directory",
+            test => 0,
+            'x.doc.show_result' => 0,
+            src => '[[prog]]',
+            src_plang => 'bash',
+        },
+    ],
 };
 sub find_duplicate_filenames {
     require Cwd;
@@ -46,6 +58,7 @@ sub find_duplicate_filenames {
             no warnings 'once'; # for $File::find::dir
             # XXX inefficient
             my $realpath = Cwd::realpath($_);
+            log_debug "Found path $realpath";
             $files{$_}{$realpath}++;
         },
         @{ $args{dirs} }
@@ -54,6 +67,7 @@ sub find_duplicate_filenames {
     my @res;
     for my $file (sort keys %files) {
         next unless keys(%{$files{$file}}) > 1;
+        log_info "%s is a DUPLICATE name (found in %d paths)", $file, scalar(keys %{$files{$file}});
         if ($args{detail}) {
             for my $path (sort keys %{$files{$file}}) {
                 push @res, {name=>$file, path=>$path};
