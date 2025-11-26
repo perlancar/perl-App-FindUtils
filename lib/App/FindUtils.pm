@@ -93,7 +93,7 @@ sub find_duplicate_filenames {
     my $eval;
     if (defined $args{eval}) {
         my $code = "no strict; no warnings; package main; sub { local \$_=\$_; " . $args{eval} . "; return \$_ }";
-        $eval = eval $code or return [400, "Can't compile code in eval: $@"];
+        $eval = eval $code or return [400, "Can't compile code in eval: $@"]; ## no critic: BuiltinFunctions::ProhibitStringyEval
     } elsif (defined $args{regex}) {
         $eval = sub { /$args{regex}/; $1 };
     }
