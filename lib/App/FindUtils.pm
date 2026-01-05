@@ -66,6 +66,11 @@ MARKDOWN
             summary => 'Filename regex to exclude',
             cmdline_aliases => {x=>{}},
         },
+        exclude_directories => {
+            schema => 'bool*',
+            summary => 'Exclude directories',
+            cmdline_aliases => {D=>{}},
+        },
     },
     examples => [
         {
@@ -107,6 +112,12 @@ sub find_duplicate_filenames {
     File::Find::find(
         sub {
             no warnings 'once'; # for $File::find::dir
+
+            if ($args{exclude_directories} && (-d)) {
+                log_info "Excluding directory: $_";
+                return;
+            }
+
             # XXX inefficient
             my $realpath = Cwd::realpath($_);
             log_debug "Found path $realpath";
