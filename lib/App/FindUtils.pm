@@ -55,6 +55,9 @@ Specify a regex with a capture to get part of the filename. The first capture
 use this to find duplicate in some part of the filename. As an alternative, see
 the `--eval` option.
 
+If regex does not match or if there is no capture, the filename will be used
+instead as the fallback.
+
 MARKDOWN
             cmdline_aliases => {r=>{}},
         },
@@ -95,7 +98,7 @@ sub find_duplicate_filenames {
         my $code = "no strict; no warnings; package main; sub { local \$_=\$_; " . $args{eval} . "; return \$_ }";
         $eval = eval $code or return [400, "Can't compile code in eval: $@"]; ## no critic: BuiltinFunctions::ProhibitStringyEval
     } elsif (defined $args{regex}) {
-        $eval = sub { /$args{regex}/; $1 };
+        $eval = sub { /$args{regex}/; $1 // $_ };
     }
 
     #my $ci = $args{case_insensitive};
