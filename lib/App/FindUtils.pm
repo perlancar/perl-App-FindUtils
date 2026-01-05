@@ -108,6 +108,11 @@ sub find_duplicate_filenames {
             my $realpath = Cwd::realpath($_);
             log_debug "Found path $realpath";
 
+            unless ($realpath) {
+                log_warn "Can't find real path for $_: $!, skipped";
+                return;
+            }
+
             if ($args{exclude_filename_regex}) {
                 if ($_ =~ $args{exclude_filename_regex}) {
                     log_info "$_ excluded (matches --exclude-filename-regex: $args{exclude_filename_regex})";
@@ -118,6 +123,10 @@ sub find_duplicate_filenames {
             my $name;
             if ($eval) {
                 $name = $eval->();
+                unless (defined $name) {
+                    log_warn "Eval code produced undef for $_, skipped";
+                    return;
+                }
             } else {
                 $name = $_;
             }
